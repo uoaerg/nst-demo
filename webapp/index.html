@@ -1,13 +1,89 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>D3 Test</title>
-        <script type="text/javascript" src="d3/d3.v3.js"></script>
-    </head>
-    <body>
-        <script type="text/javascript">
-            // Your beautiful D3 code will go here
-        </script>
-    </body>
-</html>  
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=UTF8">
+		<link rel="stylesheet" type="text/css" href="/css/c3.css">
+	</head>
+	<body>
+		<div id="eth1" style="width:35%; float:left" >
+			<div class="eth1-donut" style="height:300px;"></div>
+			<div class="eth1-line" style="height:100px;"></div>
+		</div>
+
+		<div id="eth2" style="width:35%; float:right" >
+			<div class="eth2-donut" style="height:300px;"></div>
+			<div class="eth2-line" style="height:100px;"></div>
+		</div>
+
+		<script src="/d3/d3.v3.js"></script> 
+		<script src="/d3/c3.js"></script>
+
+		<script>
+		var eth1line = c3.generate({
+			bindto: ".eth1-line",
+			data: {
+				columns: [
+					['rx', 30, 200, 100, 400, 150, 250],
+					['tx', 50, 20, 10, 40, 15, 25]
+				]
+			},
+			axis: {
+				y: { show: false },
+				x: { show: false }
+			},
+			legend: { hide: true },
+		});
+
+		var eth1donut = c3.generate({
+			bindto: ".eth1-donut",
+			data: {
+			columns: [
+				['data1', 30],
+				['data2', 120],
+			],
+			type : 'donut',
+//			onclick: function (d, i) { console.log("onclick", d, i); },
+//			onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+//			onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+			},
+			donut: {
+				title: "ETH1 RATE"
+			},
+			legend: { hide: true },
+		});
+
+		var eth2line = c3.generate({
+			bindto: ".eth2-line",
+			data: {
+				columns: [
+					['rx', 30, 200, 100, 400, 150, 250],
+					['tx', 50, 20, 10, 40, 15, 25]
+				]
+			},
+			axis: {
+				y: { show: false },
+				x: { show: false }
+			},
+			legend: { hide: true },
+		});
+
+		var eth2donut = c3.generate({
+			bindto: ".eth2-donut",
+			data: {
+			columns: [
+				['data1', 30],
+				['data2', 120],
+			],
+			type : 'donut',
+//			onclick: function (d, i) { console.log("onclick", d, i); },
+//			onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+//			onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+			},
+			donut: {
+				title: "ETH2 RATE"
+			},
+			legend: { hide: true },
+		});
+
+		</script>
+	</body>
+</html>
