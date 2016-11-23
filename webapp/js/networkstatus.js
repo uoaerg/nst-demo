@@ -20,8 +20,8 @@ function setupcharts()
 		bindto: ".eth1-donut",
 		data: {
 		columns: [
-			['data1', 30],
-			['data2', 120],
+			['rx', 30],
+			['tx', 120],
 		],
 		type : 'donut',
 		},
@@ -50,8 +50,8 @@ function setupcharts()
 		bindto: ".eth2-donut",
 		data: {
 		columns: [
-			['data1', 30],
-			['data2', 120],
+			['rx', 30],
+			['tx', 120],
 		],
 		type : 'donut',
 		},
@@ -72,13 +72,38 @@ function init()
 	var charts = setupcharts();
 	console.log(charts);
 
-	ws = new WebSocket("ws://localhost:8080/ifstatus", "highspeednetworking");
+	ws = new WebSocket("ws://localhost:8080/ifstatus", "SUPERNET");
 	ws.onopen = function (event) {
 		console.log("ws connected");
-		ws.send("Here's some text that the server is urgently awaiting!"); 
 	};
 
 	ws.onmessage = function (event) {
-		console.log(event.data);
+		netdata = JSON.parse(event.data)
+
+		charts.eth1line.load({
+			columns: [
+				['rx'].concat(netdata["eth1"]["rx"]),
+				['tx'].concat(netdata["eth1"]["tx"])
+			]
+		});
+		charts.eth1donut.load({
+			columns: [
+				['rx'].concat(netdata["eth1"]["rx"].slice(-1)[0]),
+				['tx'].concat(netdata["eth1"]["tx"].slice(-1)[0])
+			]
+		});
+
+		charts.eth2line.load({
+			columns: [
+				['rx'].concat(netdata["eth2"]["rx"]),
+				['tx'].concat(netdata["eth2"]["tx"])
+			]
+		});
+		charts.eth2donut.load({
+			columns: [
+				['rx'].concat(netdata["eth2"]["rx"].slice(-1)[0] ),
+				['tx'].concat(netdata["eth2"]["tx"].slice(-1)[0] )
+			]
+		});
 	}
 }

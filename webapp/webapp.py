@@ -1,5 +1,20 @@
 import asyncio
 from aiohttp import web
+import json
+import random
+
+wsclients = []
+networkstats = {
+    "dscps": [0, 46],
+    "eth1": {
+        "rx":[100],
+        "tx":[100],
+    },
+    "eth2":{
+        "rx":[100],
+        "tx":[100]
+    }
+}
 
 async def handle(request):
     indexpage = None
@@ -9,11 +24,12 @@ async def handle(request):
     return web.Response(text=indexpage, content_type='text/html')
 
 async def wshandler(request):
-    ws = web.WebSocketResponse()
+    ws = web.WebSocketResponse(protocols=['SUPERNET'])
     await ws.prepare(request)
 
-    print("we connected")
-    
+    wsclients.append(ws)
+   
+    #send an initial response
     async for msg in ws:
         if msg.type == web.MsgType.text:
             ws.send_str("Hello, {}".format(msg.data))
@@ -21,13 +37,27 @@ async def wshandler(request):
             ws.send_bytes(msg.data)
         elif msg.type == web.MsgType.close:
             break
-
     return ws
 
+def readstats(networkstats):
+    networkstats["eth1"]["rx"].append(random.randint(0, 255))
+    networkstats["eth1"]["tx"].append(random.randint(0, 255))
+
+    networkstats["eth2"]["rx"].append(random.randint(0, 255))
+    networkstats["eth2"]["tx"].append(random.randint(0, 255))
+
+    return networkstats 
+
 async def updatestats(app):
+    global networkstats
     while True:
         await asyncio.sleep(1)
-        print("updating")
+
+        networkstats = readstats(networkstats)
+
+        for client in wsclients:
+            #client.send_str(json.dumps("{'key':'value'}"))
+            client.send_str(json.dumps(networkstats))
 
 async def start_background_tasks(app):
     app.loop.create_task(updatestats(app))
