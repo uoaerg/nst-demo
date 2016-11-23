@@ -1,8 +1,10 @@
 from aiohttp import web
 
 async def handle(request):
-    name = request.match_info.get('name', "neighbour")
-    text = "Hello, " + name
+    indexpage = None
+
+    with open('index.html', 'r') as indexfile:
+        indexpage=indexfile.read()
     return web.Response(text=indexpage, content_type='text/html')
 
 async def wshandler(request):
@@ -19,19 +21,14 @@ async def wshandler(request):
 
     return ws
 
-indexpage = None
-
-with open('index.html', 'r') as indexfile:
-    indexpage=indexfile.read()
 
 app = web.Application()
 
-
 app.router.add_static('/d3', "d3")
 app.router.add_static('/css', "css")
+app.router.add_static('/js', "js")
 
-app.router.add_get('/echo', wshandler)
+app.router.add_get('/ifstatus', wshandler)
 app.router.add_get('/', handle)
-app.router.add_get('/{name}', handle)
 
 web.run_app(app)
