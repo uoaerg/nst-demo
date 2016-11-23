@@ -1,0 +1,3 @@
+[submodule "neat-streamer"]
+	path = neat-streamer
+	url = https://github.com/uoaerg/neat-streamer
