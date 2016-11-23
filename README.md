@@ -1,4 +1,4 @@
-# neat-streamer demo
+# `neat-streamer` demo
 
 Source code to build and setup the neat-streamer demo.
 
