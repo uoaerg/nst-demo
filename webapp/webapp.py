@@ -1,3 +1,4 @@
+import asyncio
 from aiohttp import web
 
 async def handle(request):
@@ -11,6 +12,8 @@ async def wshandler(request):
     ws = web.WebSocketResponse()
     await ws.prepare(request)
 
+    print("we connected")
+    
     async for msg in ws:
         if msg.type == web.MsgType.text:
             ws.send_str("Hello, {}".format(msg.data))
@@ -21,6 +24,13 @@ async def wshandler(request):
 
     return ws
 
+async def updatestats(app):
+    while True:
+        await asyncio.sleep(1)
+        print("updating")
+
+async def start_background_tasks(app):
+    app.loop.create_task(updatestats(app))
 
 app = web.Application()
 
@@ -30,5 +40,7 @@ app.router.add_static('/js', "js")
 
 app.router.add_get('/ifstatus', wshandler)
 app.router.add_get('/', handle)
+
+app.on_startup.append(start_background_tasks)
 
 web.run_app(app)
