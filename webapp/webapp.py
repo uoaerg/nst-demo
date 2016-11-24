@@ -2,9 +2,14 @@ import asyncio
 from aiohttp import web
 import json
 import random
+import pprint
+
+pp = pprint.PrettyPrinter(indent=4)
+
+import networkstats
 
 wsclients = []
-networkstats = {
+lnetworkstats = {
     "dscps": [0, 46],
     "eth1": {
         "rx":[100],
@@ -49,15 +54,18 @@ def readstats(networkstats):
     return networkstats 
 
 async def updatestats(app):
-    global networkstats
+    global lnetworkstats
     while True:
         await asyncio.sleep(1)
 
-        networkstats = readstats(networkstats)
+        lnetworkstats = readstats(lnetworkstats)
 
         for client in wsclients:
             #client.send_str(json.dumps("{'key':'value'}"))
-            client.send_str(json.dumps(networkstats))
+            #client.send_str(json.dumps(lnetworkstats))
+            #print("sending to ws")
+            #pp.pprint(networkstats.interfaces)
+            client.send_str(json.dumps(networkstats.interfaces))
 
 async def start_background_tasks(app):
     app.loop.create_task(updatestats(app))
@@ -72,5 +80,6 @@ app.router.add_get('/ifstatus', wshandler)
 app.router.add_get('/', handle)
 
 app.on_startup.append(start_background_tasks)
+app.on_startup.append(networkstats.start_monitoring)
 
 web.run_app(app)

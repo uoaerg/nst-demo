@@ -80,29 +80,35 @@ function init()
 	ws.onmessage = function (event) {
 		netdata = JSON.parse(event.data)
 
+		if(!netdata['interfaces'] ||!netdata['interfaces'].length)
+			return;
+
+		eth1 = netdata['interfaces'][0]
+		eth2 = netdata['interfaces'][1]
+
 		charts.eth1line.load({
 			columns: [
-				['rx'].concat(netdata["eth1"]["rx"]),
-				['tx'].concat(netdata["eth1"]["tx"])
+				['rx'].concat(netdata[eth1]["rx"]),
+				['tx'].concat(netdata[eth1]["tx"])
 			]
 		});
 		charts.eth1donut.load({
 			columns: [
-				['rx'].concat(netdata["eth1"]["rx"].slice(-1)[0]),
-				['tx'].concat(netdata["eth1"]["tx"].slice(-1)[0])
+				['rx'].concat(netdata[eth1]["rx"].slice(-1)[0]),
+				['tx'].concat(netdata[eth1]["tx"].slice(-1)[0])
 			]
 		});
 
 		charts.eth2line.load({
 			columns: [
-				['rx'].concat(netdata["eth2"]["rx"]),
-				['tx'].concat(netdata["eth2"]["tx"])
+				['rx'].concat(netdata[eth2]["rx"]),
+				['tx'].concat(netdata[eth2]["tx"])
 			]
 		});
 		charts.eth2donut.load({
 			columns: [
-				['rx'].concat(netdata["eth2"]["rx"].slice(-1)[0] ),
-				['tx'].concat(netdata["eth2"]["tx"].slice(-1)[0] )
+				['rx'].concat(netdata[eth2]["rx"].slice(-1)[0] ),
+				['tx'].concat(netdata[eth2]["tx"].slice(-1)[0] )
 			]
 		});
 	}
