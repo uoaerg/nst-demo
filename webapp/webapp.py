@@ -9,17 +9,6 @@ pp = pprint.PrettyPrinter(indent=4)
 import networkstats
 
 wsclients = []
-lnetworkstats = {
-    "dscps": [0, 46],
-    "eth1": {
-        "rx":[100],
-        "tx":[100],
-    },
-    "eth2":{
-        "rx":[100],
-        "tx":[100]
-    }
-}
 
 async def handle(request):
     indexpage = None
@@ -54,17 +43,9 @@ def readstats(networkstats):
     return networkstats 
 
 async def updatestats(app):
-    global lnetworkstats
     while True:
         await asyncio.sleep(1)
-
-        lnetworkstats = readstats(lnetworkstats)
-
         for client in wsclients:
-            #client.send_str(json.dumps("{'key':'value'}"))
-            #client.send_str(json.dumps(lnetworkstats))
-            #print("sending to ws")
-            #pp.pprint(networkstats.interfaces)
             client.send_str(json.dumps(networkstats.interfaces))
 
 async def start_background_tasks(app):
