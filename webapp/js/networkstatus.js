@@ -5,9 +5,12 @@ function setupcharts()
 		bindto: ".eth1-line",
 		data: {
 			columns: [
-				['rx', 30, 200, 100, 400, 150, 250],
-				['tx', 50, 20, 10, 40, 15, 25]
+				['rx'].concat(new Array(100).fill(0)),
+				['tx'].concat(new Array(100).fill(0)),
 			]
+		},
+		point: {
+			show: false
 		},
 		axis: {
 			y: { show: false },
@@ -65,9 +68,12 @@ function setupcharts()
 		bindto: ".eth2-line",
 		data: {
 			columns: [
-				['rx', 30, 200, 100, 400, 150, 250],
-				['tx', 50, 20, 10, 40, 15, 25]
+				['rx'].concat(new Array(100).fill(0)),
+				['tx'].concat(new Array(100).fill(0)),
 			]
+		},
+		point: {
+			show: false
 		},
 		axis: {
 			y: { show: false },
