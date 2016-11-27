@@ -45,8 +45,18 @@ def readstats(networkstats):
 async def updatestats(app):
     while True:
         await asyncio.sleep(1)
+
+        interfaces = networkstats.interfaces
+
+        for x in interfaces:
+            if 'interfaces' in x: continue
+
+            interfaces[x]['rx'] = list(interfaces[x]['rx'])
+            interfaces[x]['tx'] = list(interfaces[x]['tx'])
+
         for client in wsclients:
-            client.send_str(json.dumps(networkstats.interfaces))
+            #client.send_str(json.dumps(networkstats.interfaces))
+            client.send_str(json.dumps(interfaces))
 
 async def start_background_tasks(app):
     app.loop.create_task(updatestats(app))

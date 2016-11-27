@@ -1,5 +1,6 @@
 import asyncio.subprocess
 import sys
+from collections import deque
 
 mode = 'rate'
 interfaces = { 'interfaces':[]}
@@ -67,10 +68,23 @@ def get_ifstats():
             interfaces[reading['iface_name']]['tx'].append(reading['bytes_out_s'])
         else: 
             interfaces['interfaces'].append(reading['iface_name'])
-            interfaces[reading['iface_name']] = { 
-                'rx': [reading['bytes_in_s']],
-                'tx': [reading['bytes_out_s']]
+
+#            interfaces[reading['iface_name']] = { 
+#                'rx': [reading['bytes_in_s']],
+#                'tx': [reading['bytes_out_s']]
+#            }
+
+            rx_deque = deque(maxlen=100)
+            rx_deque.append(reading['bytes_in_s'])
+            tx_deque = deque(maxlen=100)
+            tx_deque.append(reading['bytes_out_s'])
+                                                         
+            interfaces[reading['iface_name']] = {
+                'rx': rx_deque,
+                'tx': tx_deque
             }
+
+
 
 async def start_monitoring(app):
     app.loop.create_task(get_ifstats())
