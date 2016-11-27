@@ -28,6 +28,12 @@ function setupcharts()
 			title: "ETH1 RATE"
 		},
 		legend: { hide: true },
+		color: {
+			pattern: [ '#7887AB', '#4F628E', '#162955', '#061539'],
+			threshold: {
+				values: [30, 60, 90, 100]
+			}
+		}
 	});
 
 	charts.eth1txgauge = c3.generate({
@@ -42,6 +48,12 @@ function setupcharts()
 			title: "ETH1 RATE"
 		},
 		legend: { hide: true },
+		color: {
+			pattern: ['#88CC88', '#55AA55', '#116611', '#004400'],
+			threshold: {
+				values: [30, 60, 90, 100]
+			}
+		}
 	});
 
 	charts.eth2line = c3.generate({
@@ -70,6 +82,12 @@ function setupcharts()
 			title: "ETH1 RATE"
 		},
 		legend: { hide: true },
+		color: {
+			pattern: [ '#7887AB', '#4F628E', '#162955', '#061539'],
+			threshold: {
+				values: [30, 60, 90, 100]
+			}
+		}
 	});
 
 	charts.eth2txgauge = c3.generate({
@@ -84,6 +102,12 @@ function setupcharts()
 			title: "ETH1 RATE"
 		},
 		legend: { hide: true },
+		color: {
+			pattern: ['#88CC88', '#55AA55', '#116611', '#004400'],
+			threshold: {
+				values: [30, 60, 90, 100]
+			}
+		}
 	});
 
 	return charts;
