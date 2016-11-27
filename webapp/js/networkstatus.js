@@ -39,15 +39,20 @@ function setupcharts()
 	charts.eth1txgauge = c3.generate({
 		bindto: ".eth1-tx-gauge",
 		data: {
-		columns: [
-			['tx', 30],
-		],
-		type : 'gauge',
+			columns: [
+				['tx', 30],
+			],
+			type : 'gauge',
 		},
-		donut: {
-			title: "ETH1 RATE"
+		gauge: {
+			label: {
+				format: function(value, ratio) {
+					return value + ' KB/s';
+				},
+				show: false 
+			},
+			max: 100000000, 
 		},
-		legend: { hide: true },
 		color: {
 			pattern: ['#88CC88', '#55AA55', '#116611', '#004400'],
 			threshold: {
