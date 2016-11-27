@@ -16,14 +16,27 @@ function setupcharts()
 		legend: { hide: true },
 	});
 
-	charts.eth1donut = c3.generate({
-		bindto: ".eth1-donut",
+	charts.eth1rxgauge = c3.generate({
+		bindto: ".eth1-rx-gauge",
 		data: {
 		columns: [
 			['rx', 30],
-			['tx', 120],
 		],
-		type : 'donut',
+		type : 'gauge',
+		},
+		donut: {
+			title: "ETH1 RATE"
+		},
+		legend: { hide: true },
+	});
+
+	charts.eth1txgauge = c3.generate({
+		bindto: ".eth1-tx-gauge",
+		data: {
+		columns: [
+			['tx', 30],
+		],
+		type : 'gauge',
 		},
 		donut: {
 			title: "ETH1 RATE"
@@ -45,18 +58,30 @@ function setupcharts()
 		},
 		legend: { hide: true },
 	});
-
-	charts.eth2donut = c3.generate({
-		bindto: ".eth2-donut",
+	charts.eth2rxgauge = c3.generate({
+		bindto: ".eth2-rx-gauge",
 		data: {
 		columns: [
 			['rx', 30],
-			['tx', 120],
 		],
-		type : 'donut',
+		type : 'gauge',
 		},
 		donut: {
-			title: "ETH2 RATE"
+			title: "ETH1 RATE"
+		},
+		legend: { hide: true },
+	});
+
+	charts.eth2txgauge = c3.generate({
+		bindto: ".eth2-tx-gauge",
+		data: {
+		columns: [
+			['tx', 30],
+		],
+		type : 'gauge',
+		},
+		donut: {
+			title: "ETH1 RATE"
 		},
 		legend: { hide: true },
 	});
@@ -92,10 +117,16 @@ function init()
 				['tx'].concat(netdata[eth1]["tx"])
 			]
 		});
-		charts.eth1donut.load({
+
+		charts.eth1rxgauge .load({
 			columns: [
 				['rx'].concat(netdata[eth1]["rx"].slice(-1)[0]),
-				['tx'].concat(netdata[eth1]["tx"].slice(-1)[0])
+			]
+		});
+
+		charts.eth1txgauge .load({
+			columns: [
+				['tx'].concat(netdata[eth1]["rx"].slice(-1)[0]),
 			]
 		});
 
@@ -105,10 +136,16 @@ function init()
 				['tx'].concat(netdata[eth2]["tx"])
 			]
 		});
-		charts.eth2donut.load({
+
+		charts.eth2rxgauge .load({
 			columns: [
-				['rx'].concat(netdata[eth2]["rx"].slice(-1)[0] ),
-				['tx'].concat(netdata[eth2]["tx"].slice(-1)[0] )
+				['rx'].concat(netdata[eth2]["rx"].slice(-1)[0]),
+			]
+		});
+
+		charts.eth2txgauge .load({
+			columns: [
+				['tx'].concat(netdata[eth2]["rx"].slice(-1)[0]),
 			]
 		});
 	}
