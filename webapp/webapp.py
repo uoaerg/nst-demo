@@ -55,7 +55,6 @@ async def updatestats(app):
             interfaces[x]['tx'] = list(interfaces[x]['tx'])
 
         for client in wsclients:
-            #client.send_str(json.dumps(networkstats.interfaces))
             client.send_str(json.dumps(interfaces))
 
 async def start_background_tasks(app):

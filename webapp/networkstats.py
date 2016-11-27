@@ -1,6 +1,7 @@
 import asyncio.subprocess
 import sys
 from collections import deque
+from itertools import repeat
 
 mode = 'rate'
 interfaces = { 'interfaces':[]}
@@ -69,14 +70,9 @@ def get_ifstats():
         else: 
             interfaces['interfaces'].append(reading['iface_name'])
 
-#            interfaces[reading['iface_name']] = { 
-#                'rx': [reading['bytes_in_s']],
-#                'tx': [reading['bytes_out_s']]
-#            }
-
-            rx_deque = deque(maxlen=100)
+            rx_deque = deque(repeat(0, 100), maxlen=100)
             rx_deque.append(reading['bytes_in_s'])
-            tx_deque = deque(maxlen=100)
+            tx_deque = deque(repeat(0, 100), maxlen=100)
             tx_deque.append(reading['bytes_out_s'])
                                                          
             interfaces[reading['iface_name']] = {
