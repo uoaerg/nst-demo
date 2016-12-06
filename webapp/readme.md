@@ -1,7 +1,7 @@
 # Control Webapp
 
 Requires python3.5+ and bwm-ng
-bwm-ng should be installed from this [fork][1] until pull requests are merged.
+bwm-ng should be installed from [master][1] until the next release
 
 launch with:
     python3.5 webapp.py
@@ -9,4 +9,4 @@ launch with:
 Connected a webbrowser to
 	localhost:8080
 
-[1]: https://github.com/adventureloop/bwm-ng
+[1]: https://github.com/vgropp/bwm-ng
