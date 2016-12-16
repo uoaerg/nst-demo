@@ -4,7 +4,43 @@ from collections import deque
 from itertools import repeat
 
 mode = 'rate'
-interfaces = { 'interfaces':[]}
+interfaces = { 'interfaces':[], 'dscp':[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]}
+
+"""from wikipdia
+DSCP value  Hex value   Decimal value   Meaning
+101 110     0x2e        46              Expedited forwarding (EF)
+000 000     0x00        0               Best effort
+001 010     0x0a        10              AF11
+001 100     0x0c        12              AF12
+001 110     0x0e        14              AF13
+010 010     0x12        18              AF21
+010 100     0x14        20              AF22
+010 110     0x16        22              AF23
+011 010     0x1a        26              AF31
+011 100     0x1c        28              AF32
+011 110     0x1e        30              AF33
+100 010     0x22        34              AF41
+100 100     0x24        36              AF42
+100 110     0x26        38              AF43
+"""
+
+dscp_mapping = [
+    {"name":"EF",   "value":0x2e, "count": 0,},
+    {"name":"BE",   "value":0x00, "count": 0,},
+    {"name":"AF11", "value":0x0a, "count": 0,},
+    {"name":"AF12", "value":0x0c, "count": 0,},
+    {"name":"AF13", "value":0x0e, "count": 0,},
+    {"name":"AF21", "value":0x12, "count": 0,},
+    {"name":"AF22", "value":0x14, "count": 0,},
+    {"name":"AF23", "value":0x16, "count": 0,},
+    {"name":"AF31", "value":0x1a, "count": 0,},
+    {"name":"AF32", "value":0x1c, "count": 0,},
+    {"name":"AF33", "value":0x1e, "count": 0,},
+    {"name":"AF41", "value":0x22, "count": 0,},
+    {"name":"AF42", "value":0x24, "count": 0,},
+    {"name":"AF43", "value":0x26, "count": 0,},
+    {"name":"Other","value":0xFF, "count": 0,},
+]
 
 def parse_ifstats(line):
     #csv output format: 

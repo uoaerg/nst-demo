@@ -33,23 +33,15 @@ async def wshandler(request):
             break
     return ws
 
-def readstats(networkstats):
-    networkstats["eth1"]["rx"].append(random.randint(0, 255))
-    networkstats["eth1"]["tx"].append(random.randint(0, 255))
-
-    networkstats["eth2"]["rx"].append(random.randint(0, 255))
-    networkstats["eth2"]["tx"].append(random.randint(0, 255))
-
-    return networkstats 
-
 async def updatestats(app):
     while True:
         await asyncio.sleep(1)
 
         interfaces = networkstats.interfaces
 
+        #remap deques to lists
         for x in interfaces:
-            if 'interfaces' in x: continue
+            if 'interfaces' in x or 'dscp' in x : continue
 
             interfaces[x]['rx'] = list(interfaces[x]['rx'])
             interfaces[x]['tx'] = list(interfaces[x]['tx'])

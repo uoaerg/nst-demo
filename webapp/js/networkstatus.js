@@ -31,6 +31,7 @@ var dscp_labels = [
 	"AF41",
 	"AF42",
 	"AF43",
+	"Other"
 ]
 
 function setupcharts() 
@@ -224,6 +225,8 @@ function init()
 		eth1 = netdata['interfaces'][1]
 		eth2 = netdata['interfaces'][2]
 
+		dscp = netdata['dscp']
+
 		charts.eth1line.load({
 			columns: [
 				['rx'].concat(netdata[eth1]["rx"]),
@@ -259,6 +262,12 @@ function init()
 		charts.eth2txgauge .load({
 			columns: [
 				['tx'].concat(netdata[eth2]["tx"].slice(-1)[0]),
+			]
+		});
+
+		charts.dscpbar.load({
+			columns: [
+				['DSCP Values'].concat(dscp)
 			]
 		});
 	}
