@@ -1,3 +1,38 @@
+/* from wikipdia
+DSCP value 	Hex value 	Decimal value 	Meaning 				
+101 110 	0x2e 		46 				Expedited forwarding (EF)
+000 000 	0x00 		0 				Best effort
+001 010 	0x0a 		10 				AF11 	
+001 100 	0x0c 		12 				AF12 
+001 110 	0x0e 		14 				AF13
+010 010 	0x12 		18 				AF21
+010 100 	0x14 		20 				AF22
+010 110 	0x16 		22 				AF23
+011 010 	0x1a 		26 				AF31
+011 100 	0x1c 		28 				AF32
+011 110 	0x1e 		30 				AF33
+100 010 	0x22 		34 				AF41
+100 100 	0x24 		36 				AF42
+100 110 	0x26 		38 				AF43
+*/
+
+var dscp_labels = [
+	"EF",
+	"BE",
+	"AF11",
+	"AF12",
+	"AF13",
+	"AF21",
+	"AF22",
+	"AF23",
+	"AF31",
+	"AF32",
+	"AF33",
+	"AF41",
+	"AF42",
+	"AF43",
+]
+
 function setupcharts() 
 {
 	var charts = {}
@@ -27,10 +62,13 @@ function setupcharts()
 		],
 		type : 'gauge',
 		},
-		donut: {
-			title: "ETH1 RATE"
+		gauge: {
+			label: {
+				format: formatbandwidth,
+				show: false 
+			},
+			max: 1000000, 
 		},
-		legend: { hide: true },
 		color: {
 			pattern: [ '#7887AB', '#4F628E', '#162955', '#061539'],
 			threshold: {
@@ -49,12 +87,10 @@ function setupcharts()
 		},
 		gauge: {
 			label: {
-				format: function(value, ratio) {
-					return value + ' KB/s';
-				},
+				format: formatbandwidth,
 				show: false 
 			},
-			max: 100000000, 
+			max: 1000000, 
 		},
 		color: {
 			pattern: ['#88CC88', '#55AA55', '#116611', '#004400'],
@@ -81,18 +117,22 @@ function setupcharts()
 		},
 		legend: { hide: true },
 	});
+
 	charts.eth2rxgauge = c3.generate({
 		bindto: ".eth2-rx-gauge",
 		data: {
-		columns: [
-			['rx', 30],
-		],
-		type : 'gauge',
+			columns: [
+				['rx', 30],
+			],
+			type : 'gauge',
 		},
-		donut: {
-			title: "ETH1 RATE"
+		gauge: {
+			label: {
+				format: formatbandwidth,
+				show: false 
+			},
+			max: 1000000, 
 		},
-		legend: { hide: true },
 		color: {
 			pattern: [ '#7887AB', '#4F628E', '#162955', '#061539'],
 			threshold: {
@@ -104,15 +144,18 @@ function setupcharts()
 	charts.eth2txgauge = c3.generate({
 		bindto: ".eth2-tx-gauge",
 		data: {
-		columns: [
-			['tx', 30],
-		],
-		type : 'gauge',
+			columns: [
+				['tx', 30],
+			],
+			type : 'gauge',
 		},
-		donut: {
-			title: "ETH1 RATE"
+		gauge: {
+			label: {
+				format: formatbandwidth,
+				show: false 
+			},
+			max: 1000000, 
 		},
-		legend: { hide: true },
 		color: {
 			pattern: ['#88CC88', '#55AA55', '#116611', '#004400'],
 			threshold: {
@@ -121,18 +164,53 @@ function setupcharts()
 		}
 	});
 
+	charts.dscpbar = c3.generate({
+		bindto: ".eth2-tx-gauge",
+		data: {
+			columns: [
+				['DSCP Values', 35, 40, 10, 1, 4, 0, 0, 5, 0, 0, 0, 0, 0, 5]
+			],
+			type: 'bar',
+		},
+		bar: {
+			width: 50 // this makes bar width 100px
+		},
+		size: {
+			height: 200,
+			width: 1000
+		},
+		axis: {
+			x: {
+				type: 'category',
+				categories: dscp_labels
+			}
+		}
+	});
+
 	return charts;
+}
+
+function formatbandwidth(bytes, ratio)	
+{
+	bits = bytes * 8
+
+	if(bits > (1024 * 1024)) {
+		return Math.floor(bits/ (1024*1024)) + ' Mb/s'
+	} else if(bits > 1024) {
+		return Math.floor(bits/ (1024)) + ' Kb/s'
+	} 
+	return Math.floor(bits) + ' b/s'
 }
 
 var ws;
 
 function init()
 {
-	console.log("init call");
 	var charts = setupcharts();
-	console.log(charts);
 
-	ws = new WebSocket("ws://localhost:8080/ifstatus", "SUPERNET");
+	websocketuri= "ws://" + window.location.hostname + ":8080/ifstatus";
+
+	ws = new WebSocket(websocketuri, "SUPERNET");
 	ws.onopen = function (event) {
 		console.log("ws connected");
 	};
@@ -143,8 +221,8 @@ function init()
 		if(!netdata['interfaces'] ||!netdata['interfaces'].length)
 			return;
 
-		eth1 = netdata['interfaces'][0]
-		eth2 = netdata['interfaces'][1]
+		eth1 = netdata['interfaces'][1]
+		eth2 = netdata['interfaces'][2]
 
 		charts.eth1line.load({
 			columns: [
@@ -161,7 +239,7 @@ function init()
 
 		charts.eth1txgauge .load({
 			columns: [
-				['tx'].concat(netdata[eth1]["rx"].slice(-1)[0]),
+				['tx'].concat(netdata[eth1]["tx"].slice(-1)[0]),
 			]
 		});
 
@@ -180,7 +258,7 @@ function init()
 
 		charts.eth2txgauge .load({
 			columns: [
-				['tx'].concat(netdata[eth2]["rx"].slice(-1)[0]),
+				['tx'].concat(netdata[eth2]["tx"].slice(-1)[0]),
 			]
 		});
 	}
