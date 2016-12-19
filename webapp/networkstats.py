@@ -25,21 +25,21 @@ DSCP value  Hex value   Decimal value   Meaning
 """
 
 dscp_mapping = [
-    {"name":"EF",   "value":0x2e, "count": 0,},
-    {"name":"BE",   "value":0x00, "count": 0,},
-    {"name":"AF11", "value":0x0a, "count": 0,},
-    {"name":"AF12", "value":0x0c, "count": 0,},
-    {"name":"AF13", "value":0x0e, "count": 0,},
-    {"name":"AF21", "value":0x12, "count": 0,},
-    {"name":"AF22", "value":0x14, "count": 0,},
-    {"name":"AF23", "value":0x16, "count": 0,},
-    {"name":"AF31", "value":0x1a, "count": 0,},
-    {"name":"AF32", "value":0x1c, "count": 0,},
-    {"name":"AF33", "value":0x1e, "count": 0,},
-    {"name":"AF41", "value":0x22, "count": 0,},
-    {"name":"AF42", "value":0x24, "count": 0,},
-    {"name":"AF43", "value":0x26, "count": 0,},
-    {"name":"Other","value":0xFF, "count": 0,},
+    {"name":"EF",   "value":0x2e, "index":0},
+    {"name":"BE",   "value":0x00, "index":1},
+    {"name":"AF11", "value":0x0a, "index":2},
+    {"name":"AF12", "value":0x0c, "index":3},
+    {"name":"AF13", "value":0x0e, "index":4},
+    {"name":"AF21", "value":0x12, "index":5},
+    {"name":"AF22", "value":0x14, "index":6},
+    {"name":"AF23", "value":0x16, "index":7},
+    {"name":"AF31", "value":0x1a, "index":8},
+    {"name":"AF32", "value":0x1c, "index":9},
+    {"name":"AF33", "value":0x1e, "index":10},
+    {"name":"AF41", "value":0x22, "index":11},
+    {"name":"AF42", "value":0x24, "index":12},
+    {"name":"AF43", "value":0x26, "index":13},
+    {"name":"Other","value":0xFF, "index":14},
 ]
 
 def parse_ifstats(line):
@@ -116,10 +116,52 @@ def get_ifstats():
                 'tx': tx_deque
             }
 
+@asyncio.coroutine
+def get_trace():
+    global interfaces
+    print("start packet tracing")
+    command = 'python3.5 tracenetwork.py'
 
+    # Create the subprocess, redirect the standard output into a pipe
+    create = asyncio.create_subprocess_shell(command,
+                                            stdout=asyncio.subprocess.PIPE)
+    proc = yield from create
+
+    while True:
+        # Read one line of output
+        data = yield from proc.stdout.readline()
+
+        interfaces['dscp'] = [0] * len(interfaces['dscp'])
+
+        line = data.decode('ascii').rstrip()
+        print(line)
+        line = line.replace("marks>", "")
+
+
+        marks = line.split(',')
+        packetstotal = 0
+        dscp = {}
+        for mark in marks:
+            if not mark: continue
+            mark = mark.split(':')
+            dscpmark = mark[0].strip()
+            count = int(mark[1])
+
+            packetstotal = packetstotal + count
+            dscp[dscpmark] = count
+
+        #we can break down the packet counts to a percentage, we don't yet, but we should
+        for mark,count in dscp.items():
+            for d in dscp_mapping:
+                if d['value'] == int(mark):
+                    interfaces['dscp'][d['index']] = count
+                    continue
+                #interfaces['dscp'][-1] = interfaces['dscp'][-1] + int(count) #other dscp marks
+        print(interfaces['dscp'])
 
 async def start_monitoring(app):
     app.loop.create_task(get_ifstats())
+    app.loop.create_task(get_trace())
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
