@@ -3,7 +3,7 @@ import time
 import sys
 
 def tracedscp(interfaces):
-    trace = plt.trace('bpf:re0')
+    trace = plt.trace('bpf:{}'.format(interfaces))
     trace.start()
 
     INTERVAL = 1
@@ -40,4 +40,4 @@ def tracedscp(interfaces):
         sys.exit()
 
 if __name__ == "__main__":
-    tracedscp("interfaces")
+    tracedscp("re1")
