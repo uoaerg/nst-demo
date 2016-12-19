@@ -71,6 +71,7 @@ function setupcharts()
 			x: { show: false }
 		},
 		legend: { hide: true },
+		interaction: {enabled: false},
 	});
 
 	charts.eth1rxgauge = c3.generate({
@@ -135,6 +136,7 @@ function setupcharts()
 			x: { show: false }
 		},
 		legend: { hide: true },
+		interaction: {enabled: false},
 	});
 
 	charts.eth2rxgauge = c3.generate({
@@ -184,7 +186,7 @@ function setupcharts()
 	});
 
 	charts.dscpbar = c3.generate({
-		bindto: ".eth2-tx-gauge",
+		bindto: ".dscp-bar",
 		data: {
 			columns: [
 				['DSCP Values', 35, 40, 10, 1, 4, 0, 0, 5, 0, 0, 0, 0, 0, 5]
@@ -204,7 +206,8 @@ function setupcharts()
 				type: 'category',
 				categories: dscp_labels
 			}
-		}
+		},
+		interaction: {enabled: false},
 	});
 
 	return charts;
