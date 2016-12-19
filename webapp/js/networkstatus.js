@@ -34,6 +34,24 @@ var dscp_labels = [
 	"Other"
 ]
 
+var dscp_label_colours = [
+	'#cc5151',
+	'#7f3333',
+	'#51cccc',
+	'#337f7f',
+	'#8ecc51',
+	'#597f33',
+	'#8e51cc',
+	'#59337f',
+	'#ccad51',
+	'#7f6c33',
+	'#51cc70',
+	'#337f46',
+	'#5170cc',
+	'#33467f',
+	'#cc51ad'
+]
+
 function setupcharts() 
 {
 	var charts = {}
@@ -172,6 +190,7 @@ function setupcharts()
 				['DSCP Values', 35, 40, 10, 1, 4, 0, 0, 5, 0, 0, 0, 0, 0, 5]
 			],
 			type: 'bar',
+			color: function (color, d) { return dscp_label_colours[d.index]; }
 		},
 		bar: {
 			width: 50 // this makes bar width 100px
