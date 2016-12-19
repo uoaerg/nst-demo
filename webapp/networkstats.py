@@ -134,7 +134,6 @@ def get_trace():
         interfaces['dscp'] = [0] * len(interfaces['dscp'])
 
         line = data.decode('ascii').rstrip()
-        print(line)
         line = line.replace("marks>", "")
 
 
@@ -157,7 +156,6 @@ def get_trace():
                     interfaces['dscp'][d['index']] = count
                     continue
                 #interfaces['dscp'][-1] = interfaces['dscp'][-1] + int(count) #other dscp marks
-        print(interfaces['dscp'])
 
 async def start_monitoring(app):
     app.loop.create_task(get_ifstats())
