@@ -5,7 +5,10 @@
 		<link rel="stylesheet" type="text/css" href="/css/c3.css">
 	</head>
 	<body onload="init()">
-		<div id="interfaces">
+		<div id="logo" style="height:250px">
+			<img src="images/neat.png" style="position:absolute; left: 30%; height: 200px"></img>
+		</div>
+		<div id="interfaces" style="height:200px">
 			<div id="eth1" style="width:35%; float:left" >
 				<div class="eth1-rx-gauge" style="height:100px;width:50%;float:left"></div>
 				<div class="eth1-tx-gauge" style="height:100px;width:50%;float:right"></div>
@@ -17,11 +20,9 @@
 				<div class="eth2-tx-gauge" style="height:100px;width:50%;float:right"></div>
 				<div class="eth2-line" style="height:100px;"></div>
 			</div>
-
 		</div>
-
-		<div id="dscp" style="width:90%;position:static" >
-			<div class="dscp-bar" style="height:300px;width:100%;"></div>
+		<div id="dscp" style="width:100%;position:static" >
+			<div class="dscp-bar" style="height:300px;width:100%; position:absolute; left:20%"></div>
 		</div>
 
 		<script src="/d3/d3.v3.js"></script> 
