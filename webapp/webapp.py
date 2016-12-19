@@ -57,6 +57,7 @@ app = web.Application()
 app.router.add_static('/d3', "d3")
 app.router.add_static('/css', "css")
 app.router.add_static('/js', "js")
+app.router.add_static('/images', "images")
 
 app.router.add_get('/ifstatus', wshandler)
 app.router.add_get('/', handle)
