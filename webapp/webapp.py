@@ -23,7 +23,7 @@ async def wshandler(request):
 
     wsclients.append(ws)
    
-    #send an initial response
+    #send an initial -  response this is not right
     async for msg in ws:
         if msg.type == web.MsgType.text:
             ws.send_str("Hello, {}".format(msg.data))
@@ -46,8 +46,15 @@ async def updatestats(app):
             interfaces[x]['rx'] = list(interfaces[x]['rx'])
             interfaces[x]['tx'] = list(interfaces[x]['tx'])
 
+        # we need to handle disconnects
+        closed = []
         for client in wsclients:
-            client.send_str(json.dumps(interfaces))
+            if not client.closed:
+                client.send_str(json.dumps(interfaces))
+            else:
+                closed.append(client)
+        for x in closed:
+            wsclients.remove(x)
 
 async def start_background_tasks(app):
     app.loop.create_task(updatestats(app))
