@@ -35,21 +35,21 @@ var dscp_labels = [
 ]
 
 var dscp_label_colours = [
-	'#cc5151',
+	'#005151',
 	'#7f3333',
 	'#51cccc',
 	'#337f7f',
+	'#33467f',
 	'#8ecc51',
 	'#597f33',
+	'#51cc70',
 	'#8e51cc',
 	'#59337f',
+	'#5170cc',
 	'#ccad51',
 	'#7f6c33',
-	'#51cc70',
-	'#337f46',
-	'#5170cc',
-	'#33467f',
-	'#cc51ad'
+	'#cc6c33',
+	'#cc51ad',
 ]
 
 function setupcharts() 
