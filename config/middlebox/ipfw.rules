@@ -1,0 +1,47 @@
+#!/bin/sh
+
+#Flush out thye list 
+
+ipfw -q -f flush
+
+#set rules command refx
+cmd="ipfw -q add"
+skip="skipto 01000"
+
+#interface
+out="re0"
+send="re2"
+recv="re1"
+
+# No restrictions on Loopback Interface
+#$cmd 00001 allow all from any to any via lo0
+
+# Allow traffic between the two local interfaces
+#$cmd 00101 allow any from $send to $recv 
+#$cmd 00102 allow any from $recv to $send
+
+# Allow any outgoing connections
+#$cmd 00103 allow all from me to any out via $out keep-state
+
+# allow any icmp
+#$cmd 00201 allow icmp from any to any via any keep-state
+
+# Allow inbound SSH connections
+#$cmd 00410 allow tcp from any to me 22 in via $out
+
+# nat rule
+#$cmd 00501 divert natd ip from any to any via in $out 
+
+#Allow packet through if it has an entry in the NAT table
+#$cmd 00601 check-state
+
+#Allow any traffic out 
+#$cmd  00602 $skip ip from any to any via $out keep-state
+
+# Everything else is denied and logged
+#$cmd 00999 deny log all from any to any
+
+#$cmd 01000 divert natd ip from any to any out via $out
+
+$cmd divert natd all from any to any via $out
+$cmd pass all from any to any
