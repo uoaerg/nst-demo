@@ -189,13 +189,13 @@ function setupcharts()
 		bindto: ".dscp-bar",
 		data: {
 			columns: [
-				['DSCP Values', 35, 40, 10, 1, 4, 0, 0, 5, 0, 0, 0, 0, 0, 5]
+				['DSCP Values', 35, 40, 10, 1, 4, 0, 0, 5, 0, 0, 0, 0, 0, 4,1]
 			],
 			type: 'bar',
 			color: function (color, d) { return dscp_label_colours[d.index]; }
 		},
 		bar: {
-			width: 50 // this makes bar width 100px
+			width: 50, // this makes bar width 100px
 		},
 		size: {
 			height: 200,
