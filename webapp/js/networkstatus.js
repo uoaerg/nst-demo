@@ -75,6 +75,7 @@ function setupcharts()
 		},
 		legend: { hide: true },
 		interaction: {enabled: false},
+		transition: { duration: 0 },
 	});
 
 	charts.eth1rxgauge = c3.generate({
@@ -140,6 +141,7 @@ function setupcharts()
 		},
 		legend: { hide: true },
 		interaction: {enabled: false},
+		transition: { duration: 0 },
 	});
 
 	charts.eth2rxgauge = c3.generate({
