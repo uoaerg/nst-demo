@@ -149,13 +149,17 @@ def get_trace():
             packetstotal = packetstotal + count
             dscp[dscpmark] = count
 
+        interfaces['dscp'][-1] = 0
         #we can break down the packet counts to a percentage, we don't yet, but we should
         for mark,count in dscp.items():
+            used = False
             for d in dscp_mapping:
                 if d['value'] == int(mark):
                     interfaces['dscp'][d['index']] = count
-                    continue
-                #interfaces['dscp'][-1] = interfaces['dscp'][-1] + int(count) #other dscp marks
+                    used = True
+                    break
+            if not used: 
+                interfaces['dscp'][-1] = interfaces['dscp'][-1] + int(count) #other dscp marks
 
 async def start_monitoring(app):
     app.loop.create_task(get_ifstats())
