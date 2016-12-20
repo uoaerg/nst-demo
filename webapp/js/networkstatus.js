@@ -52,6 +52,9 @@ var dscp_label_colours = [
 	'#cc51ad',
 ]
 
+var dscp_map = [ true, true, true, true, true, true, true, true, true, true,
+true, true, true, true, true ];
+
 function setupcharts() 
 {
 	var charts = {}
@@ -192,7 +195,8 @@ function setupcharts()
 				['DSCP Values', 35, 40, 10, 1, 4, 0, 0, 5, 0, 0, 0, 0, 0, 4,1]
 			],
 			type: 'bar',
-			color: function (color, d) { return dscp_label_colours[d.index]; }
+			color: function (color, d) { return dscp_label_colours[d.index];},
+			onclick: onbarchartclick
 		},
 		bar: {
 			width: 50, // this makes bar width 100px
@@ -207,10 +211,21 @@ function setupcharts()
 				categories: dscp_labels
 			}
 		},
-		interaction: {enabled: false},
+		interaction: {enabled: true},
 	});
 
+	d3.selectAll('.tick').on('click', onbarchartclick);
+
 	return charts;
+}
+
+function onbarchartclick(value, index)
+{
+	//console.dir(this);
+	//console.dir([value, index]);
+	console.log(dscp_labels[value]);
+
+	dscp_map[value] = !dscp_map[value];
 }
 
 function formatbandwidth(bytes, ratio)	
@@ -234,20 +249,25 @@ function init()
 	websocketuri= "ws://" + window.location.hostname + ":8080/ifstatus";
 
 	ws = new WebSocket(websocketuri, "SUPERNET");
+
 	ws.onopen = function (event) {
 		console.log("ws connected");
 	};
 
 	ws.onmessage = function (event) {
-		netdata = JSON.parse(event.data)
+		console.log(dscp_map)
+		console.log(JSON.stringify(dscp_map));
+		ws.send(JSON.stringify(dscp_map));
+
+		netdata = JSON.parse(event.data);
 
 		if(!netdata['interfaces'] ||!netdata['interfaces'].length)
 			return;
 
-		eth1 = netdata['interfaces'][1]
-		eth2 = netdata['interfaces'][2]
+		eth1 = netdata['interfaces'][1];
+		eth2 = netdata['interfaces'][2];
 
-		dscp = netdata['dscp']
+		dscp = netdata['dscp'];
 
 		charts.eth1line.load({
 			columns: [

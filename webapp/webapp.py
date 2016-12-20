@@ -26,7 +26,12 @@ async def wshandler(request):
     #send an initial -  response this is not right
     async for msg in ws:
         if msg.type == web.MsgType.text:
-            ws.send_str("Hello, {}".format(msg.data))
+            wsreply = json.loads(msg.data)
+            print(wsreply)
+
+            if type(wsreply) is list and len(wsreply) == 15:
+                networkstats.setdscpmap(wsreply)
+    
         elif msg.type == web.MsgType.binary:
             ws.send_bytes(msg.data)
         elif msg.type == web.MsgType.close:

@@ -161,6 +161,9 @@ def get_trace():
             if not used: 
                 interfaces['dscp'][-1] = interfaces['dscp'][-1] + int(count) #other dscp marks
 
+def setdscpmap(dscpmap):
+    print(dscpmap)
+
 async def start_monitoring(app):
     app.loop.create_task(get_ifstats())
     app.loop.create_task(get_trace())
