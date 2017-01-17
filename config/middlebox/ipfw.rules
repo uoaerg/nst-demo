@@ -6,7 +6,7 @@ ipfw -q -f flush
 
 #set rules command refx
 cmd="ipfw -q add"
-skip="skipto 01000"
+skip="skipto 010000"
 
 #interface
 out="re0"
