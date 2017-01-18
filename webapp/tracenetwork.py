@@ -9,6 +9,7 @@ def tracedscp(interfaces):
     INTERVAL = 1
 
     dscp = {}
+    proto = {}
     start = time.time()
 
     try:
@@ -17,12 +18,18 @@ def tracedscp(interfaces):
             if not ip:
                 continue
 
+            protonum = ip.proto
             dscpvalue = ip.traffic_class >> 2
 
             if dscpvalue in dscp:
                 dscp[dscpvalue] = dscp[dscpvalue] + 1
             else:
                 dscp[dscpvalue] = 1
+
+            if protonum in proto:
+                proto[protonum] = proto[protonum] + 1
+            else:
+                proto[protonum] = 1
 
             done = time.time()
 
@@ -32,7 +39,15 @@ def tracedscp(interfaces):
                     print(" {}:{},".format(mark, count), end="")
                 print("")
                 sys.stdout.flush()
+
+                print("protos>".format(len(dscp)), end="")
+                for num,count in proto.items():
+                    print(" {}:{},".format(num, count), end="")
+                print("")
+
+                sys.stdout.flush()
                 dscp = {}
+                proto = {}
                 start = done
 
     except KeyboardInterrupt:
