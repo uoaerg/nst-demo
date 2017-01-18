@@ -153,6 +153,16 @@ def add_dscp_rule(index, mark, action):
         stdout=asyncio.subprocess.PIPE)
     proc = yield from create
 
+async def ipfw_add_with_cmd(data, rulerange):
+    global dscp_mapping
+    dscpmap = dscp_mapping
+
+    dscpmap = parse_dscp(data, dscpmap)
+
+    await clear_local_rules(rulerange)
+    for mark, action in dscpmap.items():
+        await add_dscp_rule(min(rulerange), mark, action)
+
 async def ipfw(rulerange):
     loop = asyncio.get_event_loop()
     loop.add_reader(sys.stdin, _stdin)
@@ -160,10 +170,14 @@ async def ipfw(rulerange):
     global dscp_mapping
     dscpmap = dscp_mapping
 
+    await clear_local_rules(rulerange)
+
     while True:
         data = await queue.get()
         data = data.rstrip()
        
+        print("writing rules")
+        print("this stuff",data)
         if "marks>" in data:
             dscpmap = parse_dscp(data, dscpmap)
 
@@ -172,6 +186,7 @@ async def ipfw(rulerange):
                 await add_dscp_rule(min(rulerange), mark, action)
 
 if __name__ == "__main__":
+    print("starting up")
     loop = asyncio.get_event_loop()
     date = loop.run_until_complete(ipfw(range(1000,2000)))
     loop.close()
