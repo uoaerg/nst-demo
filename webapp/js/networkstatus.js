@@ -55,17 +55,17 @@ var dscp_label_colours = [
 var dscp_map = [ true, true, true, true, true, true, true, true, true, true,
 true, true, true, true, true ];
 
-var iproto_labels = [
+var ipproto_labels = [
 	"TCP",
 	"UDP",
-	"UDP-LITE",
+	"UDP-Lite",
 	"SCTP",
 	"DCCP",
 	"ICMP",
 	"Other",
 ];
 
-var iproto_label_colours = [
+var ipproto_label_colours = [
 	'#005151',
 	'#7f3333',
 	'#51cccc',
@@ -212,6 +212,23 @@ function setupcharts()
 		}
 	});
 
+	charts.protopie = c3.generate({
+		bindto: ".ipproto-pie",
+		data: {
+			// iris data from R
+			columns: [
+				['TCP', 30],
+				['UDP', 20],
+				['ICMP', 12],
+				['UDP-Lite', 3],
+				['SCTP', 10],
+				['DCCP', 0],
+				['Other', 5],
+			],
+			type : 'pie',
+		}
+	});
+
 	charts.dscpbar = c3.generate({
 		bindto: ".dscp-bar",
 		data: {
@@ -292,7 +309,6 @@ function init()
 		eth2 = netdata['interfaces'][2];
 
 		dscp = netdata['dscp'];
-		console.log(dscp);
 
 		charts.eth1line.load({
 			columns: [
@@ -301,13 +317,13 @@ function init()
 			]
 		});
 
-		charts.eth1rxgauge .load({
+		charts.eth1rxgauge.load({
 			columns: [
 				['rx'].concat(netdata[eth1]["rx"].slice(-1)[0]),
 			]
 		});
 
-		charts.eth1txgauge .load({
+		charts.eth1txgauge.load({
 			columns: [
 				['tx'].concat(netdata[eth1]["tx"].slice(-1)[0]),
 			]
@@ -320,16 +336,25 @@ function init()
 			]
 		});
 
-		charts.eth2rxgauge .load({
+		charts.eth2rxgauge.load({
 			columns: [
 				['rx'].concat(netdata[eth2]["rx"].slice(-1)[0]),
 			]
 		});
 
-		charts.eth2txgauge .load({
+		charts.eth2txgauge.load({
 			columns: [
 				['tx'].concat(netdata[eth2]["tx"].slice(-1)[0]),
 			]
+		});
+
+		protocols = []
+		for( var i = 0; i < netdata['ipproto'].length;i++) {
+			protocols.push([ipproto_labels[i], netdata['ipproto'][i] ]);
+		}
+
+		charts.protopie.load({
+			columns: protocols
 		});
 
 		charts.dscpbar.load({
