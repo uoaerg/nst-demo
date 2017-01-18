@@ -199,7 +199,7 @@ def get_trace():
                 used = False
                 for d in ipproto_mapping:
                     if d['value'] == int(num):
-                        interfaces['dscp'][d['index']] = count
+                        interfaces['ipproto'][d['index']] = count
                         used = True
                         break
                 if not used: 
