@@ -34,13 +34,13 @@ def tracedscp(interfaces):
             done = time.time()
 
             if done - start > INTERVAL:
-                print("marks>".format(len(dscp)), end="")
+                print("marks>", end="")
                 for mark,count in dscp.items():
                     print(" {}:{},".format(mark, count), end="")
                 print("")
                 sys.stdout.flush()
 
-                print("protos>".format(len(dscp)), end="")
+                print("protos>", end="")
                 for num,count in proto.items():
                     print(" {}:{},".format(num, count), end="")
                 print("")
