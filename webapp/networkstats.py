@@ -3,12 +3,11 @@ import sys
 from collections import deque
 from itertools import repeat
 
-mode = 'rate'
-interfaces = { 
-    'interfaces':[], 
-    'dscp':[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
-    'ipproto':[0, 0, 0, 0, 0, 0, 0,]
-}
+import pprint
+
+pp = pprint.PrettyPrinter(indent=4)
+
+import ipfwcontrol
 
 """from wikipdia
 DSCP value  Hex value   Decimal value   Meaning
@@ -55,6 +54,32 @@ ipproto_mapping = [
     {"name":"ICMP",     "value":1,   "index":5},
     {"name":"Other",    "value":255, "index":14},
 ]
+
+mode = 'rate'
+interfaces = { 
+    'interfaces':[], 
+    'dscp':[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+    'ipproto':[0, 0, 0, 0, 0, 0, 0,]
+}
+
+dscpmap = {
+    "ef":"pass",
+    "be":"pass",
+    "af11":"pass",
+    "af12":"pass",
+    "af13":"pass",
+    "af21":"pass",
+    "af22":"pass",
+    "af23":"pass",
+    "af31":"pass",
+    "af32":"pass",
+    "af33":"pass",
+    "af41":"pass",
+    "af42":"pass",
+    "af43":"pass",
+}
+oldmap = []
+mapchange = False
 
 def parse_ifstats(line):
     #csv output format: 
@@ -181,7 +206,6 @@ def get_trace():
             interfaces['ipproto'] = [0] * len(interfaces['ipproto']) #zero out the ipprotos 
             line = line.replace("protos>", "")
 
-    #I think this can be a single function
             values = line.split(',')
             packetstotal = 0
             protonums = {}
@@ -204,13 +228,57 @@ def get_trace():
                         break
                 if not used: 
                     interfaces['ipproto'][-1] = interfaces['ipproto'][-1] + int(count) #other ip protocols 
+@asyncio.coroutine
+def control_firewall():
+    global dscpmap
+    global mapchange
 
-def setdscpmap(dscpmap):
-    print(dscpmap)
+    print("starting firewall controller")
+    command = 'python3.5 ipfwcontrol.py'
+
+    # Create the subprocess, redirect the standard output into a pipe
+    create = asyncio.create_subprocess_shell(command,
+                                            stdout=asyncio.subprocess.PIPE,
+                                            stdin=asyncio.subprocess.PIPE)
+    proc = yield from create
+
+    while True:
+        yield from asyncio.sleep(1)
+
+        if mapchange:
+            dscpcmd = "marks>"
+            for mark, action in dscpmap.items():
+                dscpcmd += " {}:{},".format(mark, action)
+            dscpcmd += "\n"
+
+            yield from ipfwcontrol.ipfw_add_with_cmd(dscpcmd, range(1000,2000))
+
+def setdscpmap(newmap):
+    global dscpmap
+    global oldmap
+    global mapchange
+
+    if oldmap == newmap: 
+        mapchange = False
+        return
+    else:
+        mapchange = True
+        oldmap = newmap
+
+    dscp = {}
+    for mark in dscpmap:
+        for d in dscp_mapping:
+            if d['name'].lower() == mark:
+                if newmap[d['index']]:
+                    dscp[mark] = 'pass'
+                else:
+                    dscp[mark] = 'drop'
+    dscpmap = dscp
 
 async def start_monitoring(app):
     app.loop.create_task(get_ifstats())
     app.loop.create_task(get_trace())
+    app.loop.create_task(control_firewall())
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
