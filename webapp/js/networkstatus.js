@@ -32,7 +32,7 @@ var dscp_labels = [
 	"AF42",
 	"AF43",
 	"Other"
-]
+];
 
 var dscp_label_colours = [
 	'#005151',
@@ -50,10 +50,32 @@ var dscp_label_colours = [
 	'#7f6c33',
 	'#cc6c33',
 	'#cc51ad',
-]
+];
 
 var dscp_map = [ true, true, true, true, true, true, true, true, true, true,
 true, true, true, true, true ];
+
+var iproto_labels = [
+	"TCP",
+	"UDP",
+	"UDP-LITE",
+	"SCTP",
+	"DCCP",
+	"ICMP",
+	"Other",
+];
+
+var iproto_label_colours = [
+	'#005151',
+	'#7f3333',
+	'#51cccc',
+	'#337f7f',
+	'#33467f',
+	'#8ecc51',
+	'#cc51ad',
+];
+
+var iproto_map = [ true, true, true, true, true, true, true];
 
 function setupcharts() 
 {
@@ -257,8 +279,8 @@ function init()
 	};
 
 	ws.onmessage = function (event) {
-		console.log(dscp_map)
-		console.log(JSON.stringify(dscp_map));
+		//console.log(dscp_map)
+		//console.log(JSON.stringify(dscp_map));
 		ws.send(JSON.stringify(dscp_map));
 
 		netdata = JSON.parse(event.data);
@@ -270,6 +292,7 @@ function init()
 		eth2 = netdata['interfaces'][2];
 
 		dscp = netdata['dscp'];
+		console.log(dscp);
 
 		charts.eth1line.load({
 			columns: [
