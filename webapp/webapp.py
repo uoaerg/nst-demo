@@ -46,7 +46,7 @@ async def updatestats(app):
 
         #remap deques to lists
         for x in interfaces:
-            if 'interfaces' in x or 'dscp' in x : continue
+            if 'interfaces' in x or 'dscp' in x or 'ipproto' in x: continue
 
             interfaces[x]['rx'] = list(interfaces[x]['rx'])
             interfaces[x]['tx'] = list(interfaces[x]['tx'])

@@ -4,7 +4,11 @@ from collections import deque
 from itertools import repeat
 
 mode = 'rate'
-interfaces = { 'interfaces':[], 'dscp':[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,]}
+interfaces = { 
+    'interfaces':[], 
+    'dscp':[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,],
+    'ipproto':[0, 0, 0, 0, 0, 0, 0,]
+}
 
 """from wikipdia
 DSCP value  Hex value   Decimal value   Meaning
@@ -40,6 +44,16 @@ dscp_mapping = [
     {"name":"AF42", "value":0x24, "index":12},
     {"name":"AF43", "value":0x26, "index":13},
     {"name":"Other","value":0xFF, "index":14},
+]
+
+ipproto_mapping = [
+    {"name":"TCP",      "value":6,   "index":0},
+    {"name":"UDP",      "value":17,  "index":1},
+    {"name":"UDP-LITE", "value":136, "index":2},
+    {"name":"SCTP",     "value":132, "index":3},
+    {"name":"DCCP",     "value":33,  "index":4},
+    {"name":"ICMP",     "value":1,   "index":5},
+    {"name":"Other",    "value":255, "index":14},
 ]
 
 def parse_ifstats(line):
@@ -131,35 +145,65 @@ def get_trace():
         # Read one line of output
         data = yield from proc.stdout.readline()
 
-        interfaces['dscp'] = [0] * len(interfaces['dscp'])
 
         line = data.decode('ascii').rstrip()
-        line = line.replace("marks>", "")
+        if "marks>" in line:
+            interfaces['dscp'] = [0] * len(interfaces['dscp']) #zero out the marks 
+            line = line.replace("marks>", "")
+
+    #I think this can be a single function
+            marks = line.split(',')
+            packetstotal = 0
+            dscp = {}
+            for mark in marks:
+                if not mark: continue
+                mark = mark.split(':')
+                dscpmark = mark[0].strip()
+                count = int(mark[1])
+
+                packetstotal = packetstotal + count
+                dscp[dscpmark] = count
+
+            interfaces['dscp'][-1] = 0
+            #we can break down the packet counts to a percentage, we don't yet, but we should
+            for mark,count in dscp.items():
+                used = False
+                for d in dscp_mapping:
+                    if d['value'] == int(mark):
+                        interfaces['dscp'][d['index']] = count
+                        used = True
+                        break
+                if not used: 
+                    interfaces['dscp'][-1] = interfaces['dscp'][-1] + int(count) #other dscp marks
 
 
-        marks = line.split(',')
-        packetstotal = 0
-        dscp = {}
-        for mark in marks:
-            if not mark: continue
-            mark = mark.split(':')
-            dscpmark = mark[0].strip()
-            count = int(mark[1])
+        if "protos>" in line:
+            interfaces['ipproto'] = [0] * len(interfaces['ipproto']) #zero out the ipprotos 
+            line = line.replace("protos>", "")
 
-            packetstotal = packetstotal + count
-            dscp[dscpmark] = count
+    #I think this can be a single function
+            values = line.split(',')
+            packetstotal = 0
+            protonums = {}
+            for value in values:
+                if not value: continue
+                value = value.split(':')
+                num = value[0].strip()
+                count = int(value[1])
 
-        interfaces['dscp'][-1] = 0
-        #we can break down the packet counts to a percentage, we don't yet, but we should
-        for mark,count in dscp.items():
-            used = False
-            for d in dscp_mapping:
-                if d['value'] == int(mark):
-                    interfaces['dscp'][d['index']] = count
-                    used = True
-                    break
-            if not used: 
-                interfaces['dscp'][-1] = interfaces['dscp'][-1] + int(count) #other dscp marks
+                packetstotal = packetstotal + count
+                protonums[num] = count
+
+            interfaces['ipproto'][-1] = 0
+            for num,count in protonums.items():
+                used = False
+                for d in ipproto_mapping:
+                    if d['value'] == int(num):
+                        interfaces['dscp'][d['index']] = count
+                        used = True
+                        break
+                if not used: 
+                    interfaces['ipproto'][-1] = interfaces['ipproto'][-1] + int(count) #other ip protocols 
 
 def setdscpmap(dscpmap):
     print(dscpmap)
